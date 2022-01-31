@@ -1,0 +1,192 @@
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+using namespace std;
+
+class Question
+{
+   //data members to store questions and answers
+   string question;
+   string possible_answer_1;
+   string possible_answer_2;
+   string possible_answer_3;
+   string possible_answer_4;
+   int num_of_correct_answer;
+public:
+
+   Question()
+   {
+       question = "";
+       possible_answer_1 = "";
+       possible_answer_2 = "";
+       possible_answer_3 = "";
+       possible_answer_4 = "";
+       num_of_correct_answer = 0;
+   }
+  
+   string getQuestion()
+   {
+       return question;
+   }
+   string getPossibleAnswer1()
+   {
+       return possible_answer_1;
+   }
+  
+   string getPossibleAnswer2()
+   {
+       return possible_answer_2;
+   }
+  
+   string getPossibleAnswer3()
+   {
+       return possible_answer_3;
+   }
+  
+   string getPossibleAnswer4()
+   {
+       return possible_answer_4;
+   }
+  
+   int getCorrectAnswerNumber()
+   {
+       return num_of_correct_answer;
+   }
+
+   void setQuestion( string ques)
+   {
+       question = ques;
+   }
+  
+   void setPossibleAnswer1( string pa1 )
+   {
+       possible_answer_1 = pa1;
+   }
+  
+   void setPossibleAnswer2( string pa2 )
+   {
+       possible_answer_2 = pa2;
+   }
+  
+   void setPossibleAnswer3( string pa3 )
+   {
+       possible_answer_3 = pa3;
+   }
+  
+   void setPossibleAnswer4( string pa4 )
+   {
+       possible_answer_4 = pa4;
+   }
+
+   void setCorrectAnswerNumber( int ans )
+   {
+       num_of_correct_answer = ans;
+   }
+};
+
+enum items
+{
+   QUESTION = 0, ANSWER_1, ANSWER_2, ANSWER_3, ANSWER_4, CORRECT_ANSWER_NUMBER
+};
+void PopulateQuestions( Question questions[])
+{
+   ifstream infile("trivia.txt");
+   int index = 0;
+  
+   while ( !infile.eof() )
+   {
+       string q,a1,a2,a3,a4;
+       int ans;
+       string s;
+  
+       if (!getline( infile, s ))
+           break;
+       istringstream ss( s );
+       int item = 0;
+       while (ss)
+       {
+           string item_str;
+           int num;
+           if ( !getline( ss, item_str, '|' ) )
+               break;
+           switch( item )
+           {
+           case QUESTION:
+               questions[index].setQuestion( item_str );
+               break;
+
+           case ANSWER_1:
+               questions[index].setPossibleAnswer1( item_str );
+               break;
+
+           case ANSWER_2:
+               questions[index].setPossibleAnswer2( item_str );
+               break;
+
+           case ANSWER_3:
+               questions[index].setPossibleAnswer3( item_str );
+               break;
+
+           case ANSWER_4:
+               questions[index].setPossibleAnswer4( item_str );
+               break;
+
+           case CORRECT_ANSWER_NUMBER:
+               int ans = atoi(item_str.c_str());
+               questions[index].setCorrectAnswerNumber( ans );
+               break;
+
+           }
+           item++;
+       }
+       index++;
+   }
+}
+
+void PlayGame(Question questions[])
+{
+   int players[2] = {0,0}; //Array to keep track of correct answers
+
+   for ( int i=0; i < 10; i++ )
+   {
+       int player_answer;
+      
+       int player = i%2; //even times is player 1 else player 2
+
+       cout<<"\nPlayer "<<player+1<<" turn\n";
+       cout<<"\n"<<questions[i].getPossibleAnswer1()<<":\n";
+       cout<<"2. "<<questions[i].getPossibleAnswer2()<<":\n";
+       cout<<"3. "<<questions[i].getPossibleAnswer3()<<":\n";
+       cout<<"4. "<<questions[i].getPossibleAnswer4()<<":\n";
+       cout<<"\nEnter the answer number:";
+       cin>>player_answer;
+
+       if ( questions[i].getCorrectAnswerNumber() == player_answer )
+       {
+           players[player] ++;
+       }
+   }
+   if ( players[0] > players[1] )
+   {
+       cout<<"\nPlayer 1 Won with "<<players[0]<<" correct answers";
+   }
+   else if ( players[0] < players[1] )
+   {
+       cout<<"\nPlayer 2 Won with "<<players[1]<<" correct answers";
+   }
+   else
+   {
+       cout<<"\nGame tied";
+   }
+}
+
+int main()
+{
+   Question questions[10];
+   PopulateQuestions(questions);
+   PlayGame(questions);
+   system("pause");
+   return 0;
+}
